@@ -22,7 +22,7 @@ const Person = mongoose.model('Person', personSchema)
 
 
 if (process.argv.length === 5) {
-    const personName = process.argv[3].toString()
+    const personName = process.argv[3].toString() 
     const personNumber = process.argv[4].toString()
     const person = new Person({
         name: personName,

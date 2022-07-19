@@ -10,8 +10,8 @@ app.use(bodyParser.json())
 app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
-morgan.token('body', (request, response) => JSON.stringify(request.body))
-app.use(morgan(':method :url :status  - :response[content-length] - :response-time ms :body'))
+morgan.token('body', (req, res) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status  - :response-time ms :body'))
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id).then(person => {

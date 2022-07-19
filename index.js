@@ -3,8 +3,10 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const Person = require('./models/person')
 
+app.use(bodyParser.json())
 app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
@@ -46,23 +48,11 @@ app.get('/info', (request, response, next) => {
 }) 
 
 app.post('/api/persons', (request, response, next) => {
-    const body = request.body
-
-    if (body.name === undefined || null) {
-        return response.status(400).json({
-            error: 'name is missing'
-        })
-    }
-
-    if (body.number === undefined || null) {
-        return response.status(400).json({
-            error: 'number is missing'
-        })
-    }
+  const body = request.body
 
     const person = new Person ({
-        name: body.name,
-        number: body.number
+      name: body.name,
+      number: body.number
     })
 
     person.save().then(savedPerson => {
@@ -72,14 +62,11 @@ app.post('/api/persons', (request, response, next) => {
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const body = request.body
+  const { name, number } = request.body
 
-  const person = {
-    name: body.name,
-    number: body.number,
-  }
-
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(request.params.id,  
+    { name, number },
+    { new: true, runValidators: true, name: 'query', number: 'query' })
     .then(updatePerson => {
       response.json(updatePerson)
     })
@@ -105,8 +92,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValdationError') {
+    return response.status(400).send({ error: error.message })
   }
-
   next(error)
 }
 
@@ -118,3 +106,4 @@ app.listen(PORT, () => {
 })
 
 //Tehtävät 3.15-3.18 valmiit!!
+//Tehtävät 3.19-3.21 valmiit!!

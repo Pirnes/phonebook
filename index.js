@@ -3,10 +3,8 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
-const bodyParser = require('body-parser')
 const Person = require('./models/person')
 
-app.use(bodyParser.json())
 app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
@@ -88,12 +86,9 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValdationError') {
-    return response.status(400).send({ error: error.message })
   }
   next(error)
 }
